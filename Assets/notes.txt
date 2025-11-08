@@ -1,0 +1,11 @@
+UI Canvas
+TextMeshPro
+used Layout group for buttons
+
+Scriptable Objects - data container for custom user defined types.
+ScriptableObjects are assets stored in your project folder,
+not the scene — so they persist across scenes naturally.
+
+When u get UI TextMeshPro ref inside code it gives u variable reference instead of copy
+List
+UI Sliders
