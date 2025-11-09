@@ -13,7 +13,7 @@ public class Quiz : MonoBehaviour
     [Header("Answers")]
     [SerializeField] GameObject[] answerButtons;
     int correctAnswerIndex;
-    bool hasAnsweredEarly = false;
+    bool hasAnsweredEarly = true;
 
     [Header("Button Colors")]
     [SerializeField] Sprite defaultAnswerSprite;
@@ -23,9 +23,25 @@ public class Quiz : MonoBehaviour
     [SerializeField] Image timerImage;
     Timer timer;
 
-    void Start()
+    [Header("Score")]
+    [SerializeField] TextMeshProUGUI scoreText;
+    Score score;
+
+    [Header("ProgressBar")]
+    [SerializeField] Slider progressBar;
+
+    public bool isComplete;
+
+    void Awake()
     {
         timer = FindAnyObjectByType<Timer>();
+        score = FindAnyObjectByType<Score>();
+    }
+
+    void Start()
+    {
+        progressBar.maxValue = questions.Count;
+        progressBar.value = 0;
     }
 
     void Update()
@@ -34,6 +50,11 @@ public class Quiz : MonoBehaviour
 
         if (timer.loadNextQuestion)
         {
+            if (progressBar.value == progressBar.maxValue)
+            {
+                isComplete = true;
+                return;
+            }
             hasAnsweredEarly = false;
             GetNextQuestion();
             timer.loadNextQuestion = false;
@@ -51,6 +72,7 @@ public class Quiz : MonoBehaviour
         DisplayAnswer(index);
         SetButtonsState(false);
         timer.CancelTimer();
+        scoreText.text = "Score : " + score.CalculateScore() + "%";
     }
 
     void DisplayAnswer(int index)
@@ -59,9 +81,10 @@ public class Quiz : MonoBehaviour
 
         if (index == currentQuestion.GetCorrectAnswerIndex())
         {
-            questionText.text = "Correct!";
+            questionText.text = "Correct Answer!";
             buttonImage = answerButtons[index].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
+            score.IncrementCorrectAnswers();
         }
         else
         {
@@ -91,6 +114,8 @@ public class Quiz : MonoBehaviour
             SetDefaultButtonSprite();
             GetRandomQuestion();
             DisplayQuestion();
+            score.IncrementQuestionsSeen();
+            progressBar.value++;
         }
     }
 
